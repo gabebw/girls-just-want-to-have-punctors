@@ -3,11 +3,13 @@
 
 import Control.Lens
 import Network.Wreq
-import Data.Text as T (Text)
+import qualified Data.Text as T
+import qualified Data.Text.IO as T (readFile)
 import Data.Aeson
 import GHC.Generics
 import Data.Function (on)
 import Data.List (maximumBy)
+import Control.Monad (liftM)
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text  }
     deriving (Generic, FromJSON, Show, Eq)
@@ -31,9 +33,24 @@ rhymebrainResults word = asJSON =<< getWith (rhymebrainOptions word) rhymebrainH
 resultsWithScore :: Int -> [RhymebrainResult] -> [RhymebrainResult]
 resultsWithScore s = filter (\result -> score result == s)
 
+fileLines :: String -> IO [T.Text]
+fileLines n = T.readFile n >>= return . T.splitOn "\n"
+
+phraseFiles :: [String]
+phraseFiles = [
+    "./phrases/beatles-songs.txt",
+    "./phrases/best-selling-books.txt",
+    "./phrases/movie-quotes.txt",
+    "./phrases/oscar-winning-movies.txt",
+    "./phrases/wikipedia-idioms.txt"
+    ]
+
+concatMapM f x = liftM concat $ mapM f x
+
 main = do
     let originalWord = "heart"
     r <- rhymebrainResults originalWord
     let results = r ^. responseBody
     let highestScoring = resultsWithScore (score $ maximum results) results
-    print $ map word highestScoring
+    fileContents <- concatMapM fileLines phraseFiles
+    print $ length fileContents
