@@ -23,6 +23,7 @@ executable girls-just-want-to-have-punctors
                , wreq
                , lens
                , text
+               , aeson
 
   -- hs-source-dirs:
   default-language:    Haskell2010
