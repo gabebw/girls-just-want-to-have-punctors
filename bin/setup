@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cabal sandbox init
+cabal install
