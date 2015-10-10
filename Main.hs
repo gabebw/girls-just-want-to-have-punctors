@@ -6,10 +6,13 @@ import Network.Wreq
 import Data.Text as T (Text)
 import Data.Aeson
 import GHC.Generics
+import Data.Function (on)
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text  }
-    deriving (Generic, FromJSON, Show)
+    deriving (Generic, FromJSON, Show, Eq)
 
+instance Ord RhymebrainResult where
+    compare = compare `on` score
 
 rhymebrainOptions :: T.Text -> Options
 rhymebrainOptions word = defaults &
