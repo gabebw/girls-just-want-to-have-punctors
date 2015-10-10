@@ -32,8 +32,8 @@ resultsWithScore :: Int -> [RhymebrainResult] -> [RhymebrainResult]
 resultsWithScore s = filter (\result -> score result == s)
 
 main = do
-    let word = "heart"
-    r <- rhymebrainResults word
+    let originalWord = "heart"
+    r <- rhymebrainResults originalWord
     let results = r ^. responseBody
     let highestScoring = resultsWithScore (score $ maximum results) results
-    print $ highestScoring
+    print $ map word highestScoring
