@@ -3,7 +3,7 @@
 
 import Control.Lens
 import Network.Wreq
-import Data.Text as T
+import Data.Text as T (Text)
 import Data.Aeson
 import GHC.Generics
 
