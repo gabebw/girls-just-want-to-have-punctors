@@ -14,6 +14,7 @@ import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
 import Text.Regex (mkRegexWithOpts, subRegex, Regex)
 import System.Environment (getArgs)
+import Data.Maybe (listToMaybe)
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
     deriving (Generic, FromJSON, Show, Eq)
@@ -75,9 +76,15 @@ anyPCRE rhymes = T.unpack $ withPCREWordBoundaries $ T.intercalate "|" rhymes
     where
         withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
-main = do
+wordFromArgs :: IO T.Text
+wordFromArgs = do
     args <- getArgs
-    let originalWord = T.pack $ if length args > 0 then head args else "heart"
+    return $ case listToMaybe args of
+      Nothing -> "heart"
+      Just w -> T.pack w
+
+main = do
+    originalWord <- wordFromArgs
     print $ "Getting puns for " <> originalWord
     r <- rhymebrainResults originalWord
     let rhymebrainResults = r ^. responseBody
