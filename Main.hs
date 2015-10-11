@@ -8,7 +8,7 @@ import qualified Data.Text.IO as T (readFile)
 import Data.Aeson
 import GHC.Generics
 import Data.Function (on)
-import Data.List (maximumBy, any)
+import Data.List (maximumBy)
 import Control.Monad (liftM)
 import Text.Regex.PCRE ((=~))
 import qualified Data.ByteString.Char8 as BC
@@ -61,11 +61,11 @@ t2b = BC.pack . T.unpack
 
 -- Does the given phrase contain any of the given rhymes?
 containsAnyOf :: [T.Text] -> T.Text -> Bool
-containsAnyOf rhymes phrase = any matchesPhrase rhymes
+containsAnyOf rhymes phrase = t2b phrase =~ anyRhyme
     where
-        matchesPhrase :: T.Text -> Bool
-        matchesPhrase rhyme = t2b phrase =~ withWordBoundaries rhyme
-        withWordBoundaries = t2b . T.cons '\\' . T.cons 'b' . snoc 'b' . snoc '\\'
+        anyRhyme = withWordBoundaries $ T.intercalate "|" rhymes
+        -- Turn "hey" into "\\b(hey)\\b"
+        withWordBoundaries = t2b . T.cons '\\' . T.cons 'b' . T.cons '(' . snoc 'b' . snoc '\\' . snoc ')'
         snoc = flip T.snoc
 
 main = do
