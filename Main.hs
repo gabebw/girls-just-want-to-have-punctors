@@ -51,7 +51,7 @@ phraseFiles = [
 main = do
     let originalWord = "heart"
     r <- rhymebrainResults originalWord
-    let results = r ^. responseBody
-    let highestScoring = resultsWithScore (score $ maximum results) results
-    fileContents <- concatMapM fileLines phraseFiles
-    print $ length fileContents
+    let rhymebrainResults = r ^. responseBody
+    let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
+    phrases <- concatMapM fileLines phraseFiles
+    print $ length phrases
