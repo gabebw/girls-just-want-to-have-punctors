@@ -11,11 +11,14 @@ import Data.Function (on)
 import Data.List (maximumBy)
 import Control.Monad (liftM)
 
-data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text  }
+data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
     deriving (Generic, FromJSON, Show, Eq)
 
 instance Ord RhymebrainResult where
     compare = compare `on` score
+
+-- Convenience function
+concatMapM f x = liftM concat $ mapM f x
 
 rhymebrainOptions :: T.Text -> Options
 rhymebrainOptions word = defaults &
@@ -44,8 +47,6 @@ phraseFiles = [
     "./phrases/oscar-winning-movies.txt",
     "./phrases/wikipedia-idioms.txt"
     ]
-
-concatMapM f x = liftM concat $ mapM f x
 
 main = do
     let originalWord = "heart"
