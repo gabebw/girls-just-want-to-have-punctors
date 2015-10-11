@@ -53,11 +53,8 @@ phraseFiles = [
     "./phrases/wikipedia-idioms.txt"
     ]
 
--- Filter to phrases that contain any of the rhymes.
--- `phrasesWithWord` will iterate through all of the phrases
--- and `containsAnyOf` will iterate through all of the rhymes.
-phrasesWithWord :: [T.Text] -> [T.Text] -> [T.Text]
-phrasesWithWord phrases rhymes = filter (containsAnyOf rhymes) phrases
+phrasesWithAnyRhyme :: [T.Text] -> [T.Text] -> [T.Text]
+phrasesWithAnyRhyme phrases rhymes = filter (containsAnyOf rhymes) phrases
 
 -- Does the given phrase contain any of the given rhymes?
 containsAnyOf :: [T.Text] -> T.Text -> Bool
@@ -91,6 +88,6 @@ main = do
     let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
     let rhymes = map word highestScoringResults
     phrases <- concatMapM fileLines phraseFiles
-    let matchingPhrases = phrasesWithWord phrases rhymes
+    let matchingPhrases = phrasesWithAnyRhyme phrases rhymes
     let puns = map (replaceAnyWith rhymes originalWord) matchingPhrases
     mapM_ putStrLn puns
