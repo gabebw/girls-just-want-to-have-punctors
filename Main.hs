@@ -65,7 +65,6 @@ containsAnyOf :: [T.Text] -> T.Text -> Bool
 containsAnyOf rhymes phrase = t2b phrase =~ anyRhyme
     where
         anyRhyme = t2b $ withWordBoundaries $ T.intercalate "|" rhymes
-        -- Turn "hey" into "(?i)\\b(hey)\\b"
         withWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
 main = do
