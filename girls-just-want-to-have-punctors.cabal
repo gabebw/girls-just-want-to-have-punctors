@@ -26,6 +26,7 @@ executable girls-just-want-to-have-punctors
                , aeson
                , regex-pcre
                , bytestring
+               , regex-compat
 
   -- hs-source-dirs:
   default-language:    Haskell2010
