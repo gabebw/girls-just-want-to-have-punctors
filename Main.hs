@@ -63,9 +63,9 @@ t2b = BC.pack . T.unpack
 containsAnyOf :: [T.Text] -> T.Text -> Bool
 containsAnyOf rhymes phrase = t2b phrase =~ anyRhyme
     where
-        anyRhyme = withWordBoundaries $ T.intercalate "|" rhymes
+        anyRhyme = t2b $ withWordBoundaries $ T.intercalate "|" rhymes
         -- Turn "hey" into "\\b(hey)\\b"
-        withWordBoundaries = t2b . T.cons '\\' . T.cons 'b' . T.cons '(' . snoc 'b' . snoc '\\' . snoc ')'
+        withWordBoundaries = T.cons '\\' . T.cons 'b' . T.cons '(' . snoc 'b' . snoc '\\' . snoc ')'
         snoc = flip T.snoc
 
 main = do
