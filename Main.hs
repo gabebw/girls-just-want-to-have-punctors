@@ -13,6 +13,7 @@ import Control.Monad (liftM)
 import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
 import Text.Regex (mkRegexWithOpts, subRegex, Regex)
+import System.Environment (getArgs)
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
     deriving (Generic, FromJSON, Show, Eq)
@@ -75,7 +76,9 @@ anyPCRE rhymes = T.unpack $ withPCREWordBoundaries $ T.intercalate "|" rhymes
         withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
 main = do
-    let originalWord = "heart"
+    args <- getArgs
+    let originalWord = T.pack $ if length args > 0 then head args else "heart"
+    print $ "Getting puns for " <> originalWord
     r <- rhymebrainResults originalWord
     let rhymebrainResults = r ^. responseBody
     let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
