@@ -11,6 +11,7 @@ import Data.Function (on)
 import Data.List (maximumBy)
 import Control.Monad (liftM)
 import Text.Regex.PCRE ((=~))
+import Data.Monoid ((<>))
 import qualified Data.ByteString.Char8 as BC
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
@@ -65,8 +66,7 @@ containsAnyOf rhymes phrase = t2b phrase =~ anyRhyme
     where
         anyRhyme = t2b $ withWordBoundaries $ T.intercalate "|" rhymes
         -- Turn "hey" into "\\b(hey)\\b"
-        withWordBoundaries = T.cons '\\' . T.cons 'b' . T.cons '(' . snoc 'b' . snoc '\\' . snoc ')'
-        snoc = flip T.snoc
+        withWordBoundaries t = "\\b(" <> t <> ")\\b"
 
 main = do
     let originalWord = "heart"
