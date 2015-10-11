@@ -8,9 +8,9 @@ Run `./bin/setup`
 
 ## Usage
 
-Run the program:
+Run the program with a word to pun on:
 
-    cabal run
+    cabal run heart
 
 Open a REPL in the package's environment:
 
