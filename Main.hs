@@ -12,8 +12,7 @@ import Data.List (maximumBy)
 import Control.Monad (liftM)
 import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
-import qualified Data.ByteString.Char8 as BC
-import Text.Regex (mkRegexWithOpts, subRegex)
+import Text.Regex (mkRegexWithOpts, subRegex, Regex)
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
     deriving (Generic, FromJSON, Show, Eq)
@@ -58,22 +57,22 @@ phraseFiles = [
 phrasesWithWord :: [T.Text] -> [T.Text] -> [T.Text]
 phrasesWithWord phrases rhymes = filter (containsAnyOf rhymes) phrases
 
-t2b :: T.Text -> BC.ByteString
-t2b = BC.pack . T.unpack
-
 -- Does the given phrase contain any of the given rhymes?
 containsAnyOf :: [T.Text] -> T.Text -> Bool
-containsAnyOf rhymes phrase = t2b phrase =~ anyRhyme
-    where
-        anyRhyme = t2b $ withPCREWordBoundaries $ T.intercalate "|" rhymes
-        withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
+containsAnyOf rhymes phrase = T.unpack phrase =~ anyPCRE rhymes
 
 replaceAnyWith :: [T.Text] -> T.Text -> T.Text -> String
-replaceAnyWith rhymes originalWord phrase = subRegex regex (T.unpack phrase) (T.unpack originalWord)
+replaceAnyWith rhymes originalWord phrase = subRegex (anyPosix rhymes) (T.unpack phrase) (T.unpack originalWord)
+
+anyPosix :: [T.Text] -> Text.Regex.Regex
+anyPosix rhymes = mkRegexWithOpts (withPosixWordBoundaries $ T.intercalate "|" rhymes) True False
     where
-        regex = mkRegexWithOpts regexPattern True False
-        regexPattern = T.unpack $ withPosixWordBoundaries $ T.intercalate "|" rhymes
-        withPosixWordBoundaries t = "[[:<:]](" <> t <> ")[[:>:]]"
+        withPosixWordBoundaries t = T.unpack $ "[[:<:]](" <> t <> ")[[:>:]]"
+
+anyPCRE :: [T.Text] -> String
+anyPCRE rhymes = T.unpack $ withPCREWordBoundaries $ T.intercalate "|" rhymes
+    where
+        withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
 main = do
     let originalWord = "heart"
