@@ -14,9 +14,7 @@ Run the program:
 
 Open a REPL in the package's environment:
 
-    cabal exec ghci
-
-You should run `:set -XOverloadedStrings` in the REPL, first thing.
+    ./bin/ghci
 
 ## Other languages
 
