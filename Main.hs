@@ -8,8 +8,10 @@ import qualified Data.Text.IO as T (readFile)
 import Data.Aeson
 import GHC.Generics
 import Data.Function (on)
-import Data.List (maximumBy)
+import Data.List (maximumBy, any)
 import Control.Monad (liftM)
+import Text.Regex.PCRE ((=~))
+import qualified Data.ByteString.Char8 as BC
 
 data RhymebrainResult = RhymebrainResult { score :: Int, word :: T.Text }
     deriving (Generic, FromJSON, Show, Eq)
@@ -48,10 +50,29 @@ phraseFiles = [
     "./phrases/wikipedia-idioms.txt"
     ]
 
+-- Filter to phrases that contain any of the rhymes.
+-- `phrasesWithWord` will iterate through all of the phrases
+-- and `containsAnyOf` will iterate through all of the rhymes.
+phrasesWithWord :: [T.Text] -> [T.Text] -> [T.Text]
+phrasesWithWord phrases rhymes = filter (containsAnyOf rhymes) phrases
+
+-- Convert Text to ByteString
+t2b = BC.pack . T.unpack
+
+-- Does the given phrase contain any of the given rhymes?
+containsAnyOf :: [T.Text] -> T.Text -> Bool
+containsAnyOf rhymes phrase = any matchesPhrase rhymes
+    where
+        matchesPhrase :: T.Text -> Bool
+        matchesPhrase rhyme = t2b phrase =~ withWordBoundaries rhyme
+        withWordBoundaries = t2b . T.cons '\\' . T.cons 'b' . snoc 'b' . snoc '\\'
+        snoc = flip T.snoc
+
 main = do
     let originalWord = "heart"
     r <- rhymebrainResults originalWord
     let rhymebrainResults = r ^. responseBody
     let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
     phrases <- concatMapM fileLines phraseFiles
-    print $ length phrases
+    let matchingPhrases = phrasesWithWord phrases (map word highestScoringResults)
+    print matchingPhrases
