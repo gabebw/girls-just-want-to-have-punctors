@@ -12,7 +12,8 @@ import Data.Maybe (listToMaybe, fromMaybe)
 import RhymebrainApi
 import Phrases
 -- import qualified Regex (solve)
-import qualified Split (solve)
+-- import qualified Split (solve)
+import qualified Parsec (solve)
 
 wordFromArgs :: IO T.Text
 wordFromArgs = do
@@ -25,7 +26,7 @@ main = do
     putStrLn $ T.unpack $ ">> Getting puns for " <> originalWord
     results <- responseBody <$> rhymebrainResults originalWord
     phrases <- concatMapM fileLines phraseFiles
-    let puns = Split.solve originalWord (rhymes results) phrases
+    let puns = Parsec.solve originalWord (rhymes results) phrases
     mapM_ putStrLn puns
         where
             responseBody = (^. Wreq.responseBody)
