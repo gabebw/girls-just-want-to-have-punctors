@@ -4,6 +4,9 @@ Puns on demand, in Haskell.
 
 ## Setup
 
+You must be using GHC 7.10 or higher because it uses its `DeriveAnyClass`
+language extension.
+
 Run `./bin/setup`
 
 ## Usage
