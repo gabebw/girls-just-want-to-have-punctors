@@ -8,7 +8,6 @@ import qualified Data.Text.IO as T (readFile)
 import Data.Aeson
 import GHC.Generics
 import Data.Function (on)
-import Data.List (maximumBy)
 import Control.Monad (liftM)
 import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
