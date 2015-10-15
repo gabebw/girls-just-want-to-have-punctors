@@ -18,11 +18,6 @@ wordFromArgs = do
     args <- getArgs
     return $ T.pack $ fromMaybe "heart" $ listToMaybe args
 
-rhymes :: [RhymebrainResult] -> [T.Text]
-rhymes results = map word highestScoringResults
-    where
-        highestScoringResults = resultsWithScore (score $ maximum results) results
-
 main :: IO ()
 main = do
     originalWord <- wordFromArgs

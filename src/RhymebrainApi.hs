@@ -37,3 +37,8 @@ rhymebrainResults word = asJSON =<< getWith (rhymebrainOptions word) rhymebrainH
 
 resultsWithScore :: Int -> [RhymebrainResult] -> [RhymebrainResult]
 resultsWithScore s = filter (\result -> score result == s)
+
+rhymes :: [RhymebrainResult] -> [T.Text]
+rhymes results = map word highestScoringResults
+    where
+        highestScoringResults = resultsWithScore (score $ maximum results) results
