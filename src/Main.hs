@@ -25,7 +25,7 @@ rhymes results = map word highestScoringResults
 main :: IO ()
 main = do
     originalWord <- wordFromArgs
-    print $ "Getting puns for " <> originalWord
+    putStrLn $ T.unpack $ ">> Getting puns for " <> originalWord
     results <- responseBody <$> rhymebrainResults originalWord
     phrases <- concatMapM fileLines phraseFiles
     let puns = Regex.solve originalWord (rhymes results) phrases
