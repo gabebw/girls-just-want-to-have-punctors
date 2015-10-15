@@ -9,9 +9,10 @@ import Data.Monoid ((<>))
 import System.Environment (getArgs)
 import Data.Maybe (listToMaybe, fromMaybe)
 
-import qualified Regex (solve)
 import RhymebrainApi
 import Phrases
+import qualified Regex (solve)
+import qualified Split (solve)
 
 wordFromArgs :: IO T.Text
 wordFromArgs = do
@@ -24,7 +25,7 @@ main = do
     putStrLn $ T.unpack $ ">> Getting puns for " <> originalWord
     results <- responseBody <$> rhymebrainResults originalWord
     phrases <- concatMapM fileLines phraseFiles
-    let puns = Regex.solve originalWord (rhymes results) phrases
+    let puns = Split.solve originalWord (rhymes results) phrases
     mapM_ putStrLn puns
         where
             responseBody = (^. Wreq.responseBody)
