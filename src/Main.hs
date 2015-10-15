@@ -3,7 +3,7 @@
 module Main where
 
 import Control.Lens ((^.))
-import Network.Wreq (responseBody)
+import qualified Network.Wreq as Wreq (responseBody)
 import qualified Data.Text as T
 import Data.Monoid ((<>))
 import System.Environment (getArgs)
@@ -17,14 +17,18 @@ wordFromArgs = do
     args <- getArgs
     return $ T.pack $ fromMaybe "heart" $ listToMaybe args
 
+rhymes :: [RhymebrainResult] -> [T.Text]
+rhymes results = map word highestScoringResults
+    where
+        highestScoringResults = resultsWithScore (score $ maximum results) results
+
 main :: IO ()
 main = do
     originalWord <- wordFromArgs
     print $ "Getting puns for " <> originalWord
-    r <- rhymebrainResults originalWord
-    let results = r ^. responseBody
-    let highestScoringResults = resultsWithScore (score $ maximum results) results
-    let rhymes = map word highestScoringResults
+    results <- responseBody <$> rhymebrainResults originalWord
     phrases <- concatMapM fileLines phraseFiles
-    let puns = Regex.solve originalWord rhymes phrases
+    let puns = Regex.solve originalWord (rhymes results) phrases
     mapM_ putStrLn puns
+        where
+            responseBody = (^. Wreq.responseBody)
