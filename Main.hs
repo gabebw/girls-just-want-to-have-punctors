@@ -1,5 +1,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
+module Main where
+
 import Control.Lens ((^.))
 import Network.Wreq (responseBody)
 import qualified Data.Text as T
@@ -7,7 +9,7 @@ import Data.Monoid ((<>))
 import System.Environment (getArgs)
 import Data.Maybe (listToMaybe, fromMaybe)
 
-import qualified Regex
+import qualified Regex (solve)
 import Common
 
 wordFromArgs :: IO T.Text
