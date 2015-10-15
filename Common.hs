@@ -2,7 +2,7 @@
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 
 -- Common functionality across implementations, like JSON fetching and parsing
--- and an easy way to parse the phrase files.
+-- and an easy way to access the phrase files.
 
 module Common where
 

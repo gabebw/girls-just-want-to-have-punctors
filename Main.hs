@@ -8,7 +8,7 @@ import System.Environment (getArgs)
 import Data.Maybe (listToMaybe, fromMaybe)
 
 import qualified Regex
-import Common (rhymebrainResults)
+import Common
 
 wordFromArgs :: IO T.Text
 wordFromArgs = do
@@ -20,5 +20,8 @@ main = do
     print $ "Getting puns for " <> originalWord
     r <- rhymebrainResults originalWord
     let rhymebrainResults = r ^. responseBody
-    puns <- Regex.solve originalWord rhymebrainResults
+    let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
+    let rhymes = map word highestScoringResults
+    phrases <- concatMapM fileLines phraseFiles
+    let puns = Regex.solve originalWord rhymes phrases
     mapM_ putStrLn puns

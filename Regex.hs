@@ -30,11 +30,7 @@ anyPCRE rhymes = T.unpack $ withPCREWordBoundaries $ T.intercalate "|" rhymes
     where
         withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
-solve :: T.Text -> [RhymebrainResult] -> IO [String]
-solve originalWord rhymebrainResults = do
-    let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
-    let rhymes = map word highestScoringResults
-    phrases <- concatMapM fileLines phraseFiles
-    let matchingPhrases = phrasesWithAnyRhyme phrases rhymes
-    let puns = map (replaceAnyWith rhymes originalWord) matchingPhrases
-    return puns
+solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
+solve originalWord rhymes phrases = map (replaceAnyWith rhymes originalWord) matchingPhrases
+    where
+        matchingPhrases = phrasesWithAnyRhyme phrases rhymes
