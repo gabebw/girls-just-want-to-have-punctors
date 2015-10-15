@@ -17,12 +17,13 @@ wordFromArgs = do
     args <- getArgs
     return $ T.pack $ fromMaybe "heart" $ listToMaybe args
 
+main :: IO ()
 main = do
     originalWord <- wordFromArgs
     print $ "Getting puns for " <> originalWord
     r <- rhymebrainResults originalWord
-    let rhymebrainResults = r ^. responseBody
-    let highestScoringResults = resultsWithScore (score $ maximum rhymebrainResults) rhymebrainResults
+    let results = r ^. responseBody
+    let highestScoringResults = resultsWithScore (score $ maximum results) results
     let rhymes = map word highestScoringResults
     phrases <- concatMapM fileLines phraseFiles
     let puns = Regex.solve originalWord rhymes phrases
