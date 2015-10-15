@@ -10,7 +10,8 @@ import System.Environment (getArgs)
 import Data.Maybe (listToMaybe, fromMaybe)
 
 import qualified Regex (solve)
-import Common
+import RhymebrainApi
+import Phrases
 
 wordFromArgs :: IO T.Text
 wordFromArgs = do

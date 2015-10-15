@@ -8,7 +8,6 @@ import qualified Data.Text as T
 import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
 import Text.Regex (mkRegexWithOpts, subRegex, Regex)
-import Common
 
 phrasesWithAnyRhyme :: [T.Text] -> [T.Text] -> [T.Text]
 phrasesWithAnyRhyme phrases rhymes = filter (containsAnyOf rhymes) phrases

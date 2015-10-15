@@ -1,15 +1,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE DeriveGeneric, DeriveAnyClass #-}
 
--- Common functionality across implementations, like JSON fetching and parsing
--- and an easy way to access the phrase files.
+-- Fetch from the Rhymebrain.com JSON API and parse it into [RhymebrainResult]
 
-module Common where
+module RhymebrainApi where
 
 import Control.Lens ((.~), (&))
 import Network.Wreq
 import qualified Data.Text as T
-import qualified Data.Text.IO as T (readFile)
 import Data.Aeson
 import GHC.Generics
 import Data.Function (on)
@@ -39,15 +37,3 @@ rhymebrainResults word = asJSON =<< getWith (rhymebrainOptions word) rhymebrainH
 
 resultsWithScore :: Int -> [RhymebrainResult] -> [RhymebrainResult]
 resultsWithScore s = filter (\result -> score result == s)
-
-fileLines :: String -> IO [T.Text]
-fileLines n = T.readFile n >>= return . T.splitOn "\n"
-
-phraseFiles :: [String]
-phraseFiles = [
-    "./phrases/beatles-songs.txt",
-    "./phrases/best-selling-books.txt",
-    "./phrases/movie-quotes.txt",
-    "./phrases/oscar-winning-movies.txt",
-    "./phrases/wikipedia-idioms.txt"
-    ]
