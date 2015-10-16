@@ -72,5 +72,6 @@ parse rhymes = parseWithEof (phraseParser rhymes)
 solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
 solve originalWord rhymes phrases = map (gracefullyParse (T.unpack originalWord) rs) ps
     where
-        ps = map T.unpack $ filter (`containsAnyWord` rhymes) $ map T.toLower phrases
+        ps = map T.unpack matchingPhrases
+        matchingPhrases = filter (`containsAnyWord` rhymes) (map T.toLower phrases)
         rs = map T.unpack rhymes
