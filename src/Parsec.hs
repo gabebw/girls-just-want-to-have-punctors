@@ -8,7 +8,7 @@ import Split (containsAnyWord)
 import qualified Data.Text as T
 import Text.Parsec (string, try, space, ParseError)
 import qualified Text.Parsec as TP (parse)
-import Text.Parsec.T.Text (Parser)
+import Text.Parsec.Text (Parser, text)
 import Text.Parsec.Combinator
 
 -- Fail if it doesn't consume all input
@@ -23,10 +23,10 @@ data Phrase = Phrase T.Text T.Text T.Text
 data Pun = Pun T.Text T.Text
 
 instance Show Pun where
-    show (Pun original pun) = pun ++ " (pun of \"" ++ original ++ "\")"
+    show (Pun original pun) = T.unpack $ pun <> " (pun of \"" <> original <> "\")"
 
 wordBoundary :: Parser T.Text
-wordBoundary = many space
+wordBoundary = T.pack <$> many space
 
 -- `choice [p]` means "use the first parser that succeeds".
 -- The `try` means "allow this parser to fail". We need it so a failing parser
@@ -40,39 +40,39 @@ phraseParser rhymes = choice $ map (try . parseAround) rhymes
 parseAround :: T.Text -> Parser Phrase
 parseAround word = do
     before <- beforeWord word
-    target <- string word
+    target <- text word
     after <- afterWord
-    return $ Phrase before after (before ++ target ++ after)
+    return $ Phrase before after (before <> target <> after)
 
 beforeWord :: T.Text -> Parser T.Text
 beforeWord word = do
-    before <- manyTill anyToken (followedByWord word)
+    before <- T.pack <$> manyTill anyToken (followedByWord word)
     boundary <- wordBoundary
-    return (before ++ boundary)
+    return (before <> boundary)
 
 afterWord :: Parser T.Text
-afterWord = many anyToken
+afterWord = T.pack <$> many anyToken
 
 followedByWord :: T.Text -> Parser ()
-followedByWord word = lookAhead $ try $ (void $ wordBoundary >> string word)
+followedByWord word = lookAhead $ try $ (void $ wordBoundary >> string (T.unpack word))
 
 buildPun :: T.Text -> Phrase -> Pun
 buildPun word phrase@(Phrase _ _ originalPhrase) = Pun originalPhrase (punOf word phrase)
 
 punOf :: T.Text -> Phrase -> T.Text
-punOf word (Phrase before after _) = before ++ word ++ after
+punOf word (Phrase before after _) = before <> word <> after
 
 gracefullyParse :: T.Text -> [T.Text] -> T.Text -> T.Text
 gracefullyParse originalWord rhymes p = either (failure p) success (parse rhymes p)
     where
-        failure phrase err = phrase ++ "/" ++ show err
-        success phrase = show $ buildPun originalWord phrase
+        failure phrase err = phrase <> "/" <> (T.pack $ show err)
+        success phrase = T.pack $ show $ buildPun originalWord phrase
 
 parse :: [T.Text] -> T.Text -> Either ParseError Phrase
 parse rhymes = parseWithEof (phraseParser rhymes)
 
-solve :: T.Text -> [T.Text] -> [T.Text] -> [T.Text]
-solve originalWord rhymes phrases = map (gracefullyParse originalWord) rs) ps
+solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
+solve originalWord rhymes phrases = map (T.unpack . gracefullyParse originalWord rs) ps
     where
         ps = filter (`containsAnyWord` rhymes) $ map T.toLower phrases
         rs = rhymes
