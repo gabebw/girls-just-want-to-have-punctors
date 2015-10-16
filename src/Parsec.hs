@@ -1,29 +1,31 @@
+{-# LANGUAGE OverloadedStrings #-}
 module Parsec where
 
 import Control.Monad (void)
 import Control.Applicative (many)
+import Data.Monoid ((<>))
 import Split (containsAnyWord)
 import qualified Data.Text as T
 import Text.Parsec (string, try, space, ParseError)
 import qualified Text.Parsec as TP (parse)
-import Text.Parsec.String (Parser)
+import Text.Parsec.T.Text (Parser)
 import Text.Parsec.Combinator
 
 -- Fail if it doesn't consume all input
-parseWithEof :: Parser a -> String -> Either ParseError a
+parseWithEof :: Parser a -> T.Text -> Either ParseError a
 parseWithEof p = TP.parse (p <* eof) ""
 
 -- The parts of a phrase before/after a word, and the whole thing
-data Phrase = Phrase String String String
+data Phrase = Phrase T.Text T.Text T.Text
     deriving Show
 
 -- The original phrase and the pun phrase
-data Pun = Pun String String
+data Pun = Pun T.Text T.Text
 
 instance Show Pun where
     show (Pun original pun) = pun ++ " (pun of \"" ++ original ++ "\")"
 
-wordBoundary :: Parser String
+wordBoundary :: Parser T.Text
 wordBoundary = many space
 
 -- `choice [p]` means "use the first parser that succeeds".
@@ -32,45 +34,45 @@ wordBoundary = many space
 -- Combined, they mean "search through this list of parsers until you find one that succeeds".
 -- At least one parser should succeed, but it's technically not guaranteed by
 -- this implementation, which could let them all fail but still itself succeed.
-phraseParser :: [String] -> Parser Phrase
+phraseParser :: [T.Text] -> Parser Phrase
 phraseParser rhymes = choice $ map (try . parseAround) rhymes
 
-parseAround :: String -> Parser Phrase
+parseAround :: T.Text -> Parser Phrase
 parseAround word = do
     before <- beforeWord word
     target <- string word
     after <- afterWord
     return $ Phrase before after (before ++ target ++ after)
 
-beforeWord :: String -> Parser String
+beforeWord :: T.Text -> Parser T.Text
 beforeWord word = do
     before <- manyTill anyToken (followedByWord word)
     boundary <- wordBoundary
     return (before ++ boundary)
 
-afterWord :: Parser String
+afterWord :: Parser T.Text
 afterWord = many anyToken
 
-followedByWord :: String -> Parser ()
+followedByWord :: T.Text -> Parser ()
 followedByWord word = lookAhead $ try $ (void $ wordBoundary >> string word)
 
-buildPun :: String -> Phrase -> Pun
+buildPun :: T.Text -> Phrase -> Pun
 buildPun word phrase@(Phrase _ _ originalPhrase) = Pun originalPhrase (punOf word phrase)
 
-punOf :: String -> Phrase -> String
+punOf :: T.Text -> Phrase -> T.Text
 punOf word (Phrase before after _) = before ++ word ++ after
 
-gracefullyParse :: String -> [String] -> String -> String
+gracefullyParse :: T.Text -> [T.Text] -> T.Text -> T.Text
 gracefullyParse originalWord rhymes p = either (failure p) success (parse rhymes p)
     where
         failure phrase err = phrase ++ "/" ++ show err
         success phrase = show $ buildPun originalWord phrase
 
-parse :: [String] -> String -> Either ParseError Phrase
+parse :: [T.Text] -> T.Text -> Either ParseError Phrase
 parse rhymes = parseWithEof (phraseParser rhymes)
 
-solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
-solve originalWord rhymes phrases = map (gracefullyParse (T.unpack originalWord) rs) ps
+solve :: T.Text -> [T.Text] -> [T.Text] -> [T.Text]
+solve originalWord rhymes phrases = map (gracefullyParse originalWord) rs) ps
     where
-        ps = map T.unpack $ filter (`containsAnyWord` rhymes) $ map T.toLower phrases
-        rs = map T.unpack rhymes
+        ps = filter (`containsAnyWord` rhymes) $ map T.toLower phrases
+        rs = rhymes
