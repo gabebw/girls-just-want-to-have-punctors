@@ -2,12 +2,13 @@ module Parsec where
 
 import Control.Monad (void)
 import Control.Applicative (many)
-import Split (containsAnyWord)
 import qualified Data.Text as T
 import Text.Parsec (string, try, space, ParseError)
 import qualified Text.Parsec as TP (parse)
 import Text.Parsec.String (Parser)
 import Text.Parsec.Combinator
+import Pun
+import Split (containsAnyWord)
 
 -- Fail if it doesn't consume all input
 parseWithEof :: Parser a -> String -> Either ParseError a
@@ -16,12 +17,6 @@ parseWithEof p = TP.parse (p <* eof) ""
 -- The parts of a phrase before/after a word, and the whole thing
 data Phrase = Phrase String String String
     deriving Show
-
--- The original phrase and the pun phrase
-data Pun = Pun String String
-
-instance Show Pun where
-    show (Pun original pun) = pun ++ " (pun of \"" ++ original ++ "\")"
 
 wordBoundary :: Parser String
 wordBoundary = many space
