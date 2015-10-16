@@ -8,6 +8,7 @@ module Split where
 
 import qualified Data.Text as T
 import Data.Monoid ((<>))
+import Pun
 
 -- Does the haystack contain any of the needles, with word boundaries?
 containsAnyWord :: T.Text -> [T.Text] -> Bool
@@ -32,8 +33,8 @@ replaceWord from to = T.unwords . map swap . T.words
         | otherwise = x
 
 solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
-solve originalWord rhymes phrases = map (T.unpack . makePun) matchingPhrases
+solve originalWord rhymes phrases = map (show . makePun) matchingPhrases
     where
-        makePun phrase = replaceAny phrase rhymes originalWord
+        makePun phrase = Pun (T.unpack phrase) (T.unpack (replaceAny phrase rhymes originalWord))
         matchingPhrases = filter (`containsAnyWord` rhymes) lowerPhrases
         lowerPhrases = map T.toLower phrases

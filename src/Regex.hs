@@ -8,6 +8,7 @@ import qualified Data.Text as T
 import Text.Regex.PCRE ((=~))
 import Data.Monoid ((<>))
 import Text.Regex (mkRegexWithOpts, subRegex, Regex)
+import Pun
 
 phrasesWithAnyRhyme :: [T.Text] -> [T.Text] -> [T.Text]
 phrasesWithAnyRhyme phrases rhymes = filter (containsAnyOf rhymes) phrases
@@ -30,6 +31,7 @@ anyPCRE rhymes = T.unpack $ withPCREWordBoundaries $ T.intercalate "|" rhymes
         withPCREWordBoundaries t = "(?i)\\b(" <> t <> ")\\b"
 
 solve :: T.Text -> [T.Text] -> [T.Text] -> [String]
-solve originalWord rhymes phrases = map (replaceAnyWith rhymes originalWord) matchingPhrases
+solve originalWord rhymes phrases = map (show . makePun) matchingPhrases
     where
+        makePun phrase = Pun (T.unpack phrase) (replaceAnyWith rhymes originalWord phrase)
         matchingPhrases = phrasesWithAnyRhyme phrases rhymes

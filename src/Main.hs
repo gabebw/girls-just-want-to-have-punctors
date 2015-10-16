@@ -11,8 +11,8 @@ import Data.Maybe (listToMaybe, fromMaybe)
 
 import RhymebrainApi
 import Phrases
--- import qualified Regex (solve)
--- import qualified Split (solve)
+import qualified Regex (solve)
+import qualified Split (solve)
 import qualified Parsec (solve)
 
 wordFromArgs :: IO T.Text
