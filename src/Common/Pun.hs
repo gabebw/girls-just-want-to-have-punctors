@@ -1,4 +1,4 @@
-module Pun where
+module Common.Pun where
 
 -- The original phrase and the pun phrase
 data Pun = Pun String String

@@ -2,7 +2,7 @@
 
 -- Easy access to the phrase files
 
-module Phrases where
+module Common.Phrases where
 
 import qualified Data.Text as T
 import qualified Data.Text.IO as T (readFile)

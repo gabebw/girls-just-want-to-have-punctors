@@ -3,7 +3,7 @@
 
 -- Fetch from the Rhymebrain.com JSON API and parse it into [RhymebrainResult]
 
-module RhymebrainApi where
+module Common.RhymebrainApi where
 
 import Control.Lens ((.~), (&))
 import Network.Wreq

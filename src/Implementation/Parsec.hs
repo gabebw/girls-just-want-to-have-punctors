@@ -1,4 +1,4 @@
-module Parsec where
+module Implementation.Parsec (solve) where
 
 import Control.Monad (void)
 import Control.Applicative (many)
@@ -7,8 +7,8 @@ import Text.Parsec (string, try, space, ParseError)
 import qualified Text.Parsec as TP (parse)
 import Text.Parsec.String (Parser)
 import Text.Parsec.Combinator
-import Pun
-import Split (containsAnyWord)
+import Common.Pun as Pun
+import Implementation.Split (containsAnyWord)
 
 -- Fail if it doesn't consume all input
 parseWithEof :: Parser a -> String -> Either ParseError a

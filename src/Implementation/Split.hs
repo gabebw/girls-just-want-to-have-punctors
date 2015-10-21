@@ -4,11 +4,11 @@
 -- because it's tricky (if it was "Heart", then we'd need to ensure the pun is
 -- "Cart", not "cart").
 
-module Split where
+module Implementation.Split (solve, containsAnyWord) where
 
 import qualified Data.Text as T
 import Data.Monoid ((<>))
-import Pun
+import Common.Pun as Pun
 
 -- Does the haystack contain any of the needles, with word boundaries?
 containsAnyWord :: T.Text -> [T.Text] -> Bool
