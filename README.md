@@ -11,22 +11,17 @@ like:
 
 ## Setup
 
-You must be using GHC 7.10 or higher because it uses its `DeriveAnyClass`
-language extension.
+You must have [Stack](http://docs.haskellstack.org/en/stable/README/) installed.
 
-Run:
+Then run:
 
     ./bin/setup
 
 ## Usage
 
-Run the program with a word to pun on:
+Run the program with puns on "heart":
 
-    cabal run heart
-
-Open a REPL in the package's environment:
-
-    ./bin/ghci
+    stack exec -- girls-just-want-to-have-punctors heart
 
 ## Implementation
 

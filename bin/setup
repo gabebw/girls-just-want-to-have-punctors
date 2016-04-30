@@ -1,4 +1,5 @@
 #!/bin/sh
 
-cabal sandbox init
-cabal install
+set -e
+
+stack install

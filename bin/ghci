@@ -1,3 +1,0 @@
-#!/bin/sh
-
-cabal exec -- ghci -XOverloadedStrings Main
